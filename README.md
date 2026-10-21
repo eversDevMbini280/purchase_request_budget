@@ -37,6 +37,8 @@
 
 - **H12** : | Que veut dire « modifiable » | Les champs métier (demandeur, motif, département, dates, lignes) ne sont modifiables qu'en brouillon ; les changements d'état passent par les boutons | Les messages du chatter restent possibles à tout état |
 
+- **H13** : | Contenu des lignes de demande de prix | Prix et unité repris de la ligne de demande ; fournisseur = partenaire suggéré ; devise de la société | Les prix restent modifiables par l'acheteur avant l'envoi au fournisseur |
+
 
 
 # Comparaison de chaque hypothèse de la roadmap avec les réponses d’OMIAS.

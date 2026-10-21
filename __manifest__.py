@@ -33,6 +33,7 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
         'views/purchase_budget_views.xml'
         'views/purchase_request_views.xml',
         'wizard/purchase_request_refuse_wizard_views.xml',
+        'views/purchase_order_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

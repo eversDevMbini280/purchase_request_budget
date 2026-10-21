@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
+from odoo import api, Command, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang
+from collections import defaultdict
+
 
 
 class PurchaseRequest(models.Model):
@@ -200,6 +202,66 @@ class PurchaseRequest(models.Model):
 
     refusal_reason = fields.Text(
         string='Motif du refus', readonly=True, copy=False, tracking=True)
+
+    purchase_order_ids = fields.One2many(
+        'purchase.order', 'purchase_request_id', string='Demandes de prix',
+        groups='purchase.group_purchase_user')
+    purchase_order_count = fields.Integer(
+        string='Nombre de demandes de prix',
+        compute='_compute_purchase_order_count',
+        groups='purchase.group_purchase_user')
+
+    @api.depends('purchase_order_ids')
+    def _compute_purchase_order_count(self):
+        for request in self:
+            request.purchase_order_count = len(request.purchase_order_ids)
+
+    def action_view_purchase_orders(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _("Demandes de prix"),
+            'res_model': 'purchase.order',
+            'view_mode': 'list,form',
+            'domain': [('purchase_request_id', '=', self.id)],
+            'context': {'create': False},
+        }
+
+    def action_create_rfqs(self):
+        self.ensure_one()
+        if self.state != 'validated':
+            raise UserError(_("Seule une demande validée peut être convertie en demandes de prix."))
+        if not self.env.user.has_group('purchase.group_purchase_user'):
+            raise UserError(_("Seul un acheteur peut générer les demandes de prix."))
+        missing = self.line_ids.filtered(lambda line: not line.supplier_id)
+        if missing:
+            names = "\n".join(
+                "- %s" % (line.description or line.product_id.display_name)
+                for line in missing)
+            raise UserError(_("Ces lignes n'ont pas de fournisseur suggéré :\n%s", names))
+        by_supplier = defaultdict(lambda: self.env['purchase.request.line'])
+        for line in self.line_ids:
+            by_supplier[line.supplier_id] |= line
+        planned = (fields.Datetime.to_datetime(self.date_required)
+                   if self.date_required else fields.Datetime.now())
+        for supplier, lines in by_supplier.items():
+            self.env['purchase.order'].create({
+                'partner_id': supplier.id,
+                'company_id': self.company_id.id,
+                'currency_id': self.currency_id.id,
+                'origin': self.name,
+                'purchase_request_id': self.id,
+                'order_line': [Command.create({
+                    'product_id': line.product_id.id,
+                    'name': line.description or line.product_id.display_name,
+                    'product_qty': line.quantity,
+                    'product_uom': (line.uom_id or line.product_id.uom_po_id).id,
+                    'price_unit': line.price_unit,
+                    'date_planned': planned,
+                }) for line in lines],
+            })
+        self.sudo().write({'state': 'converted'})
+        return self.action_view_purchase_orders()
 
     def action_refuse(self):
         """Ouvre l'assistant : le motif est obligatoire avant toute action."""
