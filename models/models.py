@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools.misc import formatLang
 
 
 class PurchaseRequest(models.Model):
@@ -70,11 +71,81 @@ class PurchaseRequest(models.Model):
         ('refused', 'Refusée'),
         ('converted', 'Convertie'),
     ], string='Statut', default='draft', tracking=True, index=True)
+
     line_ids = fields.One2many(
         'purchase.request.line', 'request_id', string='Lignes', copy=True)
     amount_total = fields.Monetary(
         string='Total', compute='_compute_amount_total', store=True,
         currency_field='currency_id', tracking=True)
+
+    budget_remaining = fields.Monetary(
+        string='Restant du budget', compute='_compute_budget_remaining',
+        currency_field='currency_id')
+
+    def _get_budget(self):
+        self.ensure_one()
+        if not self.department_id or not self.date_start:
+            return self.env['purchase.budget']
+        return self.env['purchase.budget']._find_for_request(
+            self.department_id, self.company_id, self.date_start)
+
+    @api.depends('department_id', 'company_id', 'date_start', 'amount_total', 'state')
+    def _compute_budget_remaining(self):
+        for request in self:
+            budget = request._get_budget()
+            request.budget_remaining = budget._get_remaining() if budget else 0.0
+
+    def _check_budget(self):
+        """Bloque si aucun budget n'existe ou si le total dépasse le restant."""
+        self.ensure_one()
+        budget = self._get_budget()
+        if not budget:
+            raise UserError(_(
+                "Aucun budget n'existe pour le département « %(dept)s » à la date du %(date)s.",
+                dept=self.department_id.display_name, date=self.date_start))
+        remaining = budget._get_remaining()
+        if self.amount_total > remaining:
+            raise UserError(_(
+                "Le total de la demande (%(total)s) dépasse le montant restant du budget (%(remaining)s).",
+                total=formatLang(self.env, self.amount_total, currency_obj=self.currency_id),
+                remaining=formatLang(self.env, remaining, currency_obj=self.currency_id)))
+
+    def _get_direction_users(self):
+        return self.env.ref('purchase_request_budget.group_request_direction').users
+
+    def _get_approvers(self):
+        """Qui doit valider : le manager du département ; la Direction si le
+        demandeur est lui-même le manager, ou si la demande attend la Direction."""
+        self.ensure_one()
+        directors = self._get_direction_users() - self.requested_by
+        if self.state == 'waiting_direction':
+            return directors
+        manager = self.department_id.manager_id.user_id
+        if manager and manager != self.requested_by:
+            return manager
+        return directors
+
+    def action_submit(self):
+        for request in self:
+            if request.state != 'draft':
+                raise UserError(_("Seule une demande en brouillon peut être soumise."))
+            if request.requested_by != self.env.user:
+                raise UserError(_("Seul le demandeur peut soumettre sa demande."))
+            if not request.line_ids:
+                raise UserError(_("Impossible de soumettre une demande sans ligne."))
+            if not request.department_id.manager_id.user_id:
+                raise UserError(_("Le département de la demande n'a pas de manager (avec un utilisateur lié) : soumission impossible."))
+            request._check_budget()
+            approvers = request._get_approvers()
+            if not approvers:
+                raise UserError(_("Aucun valideur disponible pour cette demande."))
+            request.state = 'submitted'
+            for approver in approvers:
+                request.activity_schedule(
+                    'mail.mail_activity_data_todo',
+                    user_id=approver.id,
+                    summary=_("À valider"),
+                    note=_("La demande %s est à valider.", request.name))
 
     @api.depends('line_ids.subtotal')
     def _compute_amount_total(self):

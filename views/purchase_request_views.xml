@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <form string="Demande d'achat">
                 <header>
+                    <button name="action_submit" string="Soumettre" type="object" class="btn-primary" invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>

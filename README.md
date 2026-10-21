@@ -24,5 +24,7 @@
 
 - **H6** : | Unicité des budgets | Pas de chevauchement par département et par société | Deux sociétés peuvent avoir des budgets aux mêmes dates pour un même département |
 
+- **H7** : | Département ou manager manquant à la soumission | La soumission est bloquée avec un message clair | Un département sans manager lié à un utilisateur ne peut pas soumettre tant qu'il n'est pas configuré |
+
 ## Limites et suite
 *(Sera complété au fil de l'eau)*
