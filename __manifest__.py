@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Budget",
+    'name': "Demandes d'achat internes",
 
-    'summary': "Application de contrôle budgétaire et génération des demandes de prix",
+    'summary': "Demandes d'achat internes avec validation selon le montant, contrôle budgétaire par département et génération des demandes de prix",
 
     'description': """
-Cette application permet la gestion complete des demandes d'achat internes d'une entreprise
+Cette application permet la gestion complète des demandes d'achat internes d'une entreprise
 multi-départements, de l'expression du besoin jusqu'à la demande de prix fournisseur.
     """,
 
@@ -17,7 +17,7 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'Budget',
+    'category': 'Inventory/Purchase',
     'version': '18.0.1.0.0',
     'license': 'LGPL-3',
 

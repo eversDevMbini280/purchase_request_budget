@@ -4,3 +4,7 @@ from . import models
 from . import purchase_request_line
 from . import purchase_budget
 from . import purchase_order
+from . import res_company
+from . import res_config_settings
+
+from . import purchase_request_cron

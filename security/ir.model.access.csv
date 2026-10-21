@@ -13,3 +13,4 @@ access_purchase_budget_demandeur,purchase.budget demandeur,model_purchase_budget
 access_purchase_budget_manager,purchase.budget manager,model_purchase_budget,group_request_manager,1,0,0,0
 access_purchase_budget_direction,purchase.budget direction,model_purchase_budget,group_request_direction,1,1,1,1
 access_purchase_budget_acheteur,purchase.budget acheteur,model_purchase_budget,purchase.group_purchase_user,1,0,0,0
+access_purchase_request_refuse_wizard,access_purchase_request_refuse_wizard,model_purchase_request_refuse_wizard,base.group_user,1,1,1,1
