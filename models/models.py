@@ -38,11 +38,12 @@ class PurchaseRequest(models.Model):
     )
     state = fields.Selection([
         ('draft', 'Brouillon'),
-        ('to_approve', 'À approuver'),
-        ('approved', 'Approuvé'),
-        ('rejected', 'Rejeté'),
-        ('done', 'Traité')
-    ], string='Statut', default='draft', tracking=True, index=True)
+        ('submitted', 'Soumise'),
+        ('waiting_direction', 'Attente Direction'),
+        ('validated', 'Validée'),
+        ('refused', 'Refusée'),
+        ('converted', 'Convertie'),
+    ], string='Statut', default='draft', tracking=True, index=True) index=True)
 
     @api.model_create_multi
     def create(self, vals_list):
