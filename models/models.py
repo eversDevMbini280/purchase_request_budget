@@ -70,6 +70,16 @@ class PurchaseRequest(models.Model):
         ('refused', 'Refusée'),
         ('converted', 'Convertie'),
     ], string='Statut', default='draft', tracking=True, index=True)
+    line_ids = fields.One2many(
+        'purchase.request.line', 'request_id', string='Lignes', copy=True)
+    amount_total = fields.Monetary(
+        string='Total', compute='_compute_amount_total', store=True,
+        currency_field='currency_id', tracking=True)
+
+    @api.depends('line_ids.subtotal')
+    def _compute_amount_total(self):
+        for request in self:
+            request.amount_total = sum(request.line_ids.mapped('subtotal'))
 
     @api.depends('requested_by')
     def _compute_department_id(self):

@@ -3,3 +3,8 @@ access_purchase_request_demandeur,purchase.request demandeur,model_purchase_requ
 access_purchase_request_manager,purchase.request manager,model_purchase_request,group_request_manager,1,1,1,0
 access_purchase_request_direction,purchase.request direction,model_purchase_request,group_request_direction,1,1,1,0
 access_purchase_request_acheteur,purchase.request acheteur,model_purchase_request,purchase.group_purchase_user,1,0,0,0
+
+access_purchase_request_line_demandeur,purchase.request.line demandeur,model_purchase_request_line,group_request_user,1,1,1,1
+access_purchase_request_line_manager,purchase.request.line manager,model_purchase_request_line,group_request_manager,1,1,1,1
+access_purchase_request_line_direction,purchase.request.line direction,model_purchase_request_line,group_request_direction,1,1,1,1
+access_purchase_request_line_acheteur,purchase.request.line acheteur,model_purchase_request_line,purchase.group_purchase_user,1,0,0,0

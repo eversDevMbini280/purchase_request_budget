@@ -16,5 +16,7 @@
 
 - **H2** : La création du modèle purchase.request dans models.py couplée à la séquence ir.sequence (purchase.request) garantit la génération automatique d'une référence unique sous le format DA/2026/XXXX lors de l'appel de la méthode create
 
+- **H3** : « Prix d'achat du produit » et unité des lignes | Prix estimé = coût du produit (standard_price) ; unité = unité d'achat du produit (uom_po_id) | Un produit sans coût donne un prix à 0, modifiable à la main |
+
 ## Limites et suite
 *(Sera complété au fil de l'eau)*

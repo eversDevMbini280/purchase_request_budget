@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vue formulaire -->
+    <record id="purchase_request_view_form" model="ir.ui.view">
+        <field name="name">purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <form string="Demande d'achat">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="requested_by" readonly="state != 'draft'"/>
+                            <field name="department_id" readonly="state != 'draft'"/>
+                            <field name="company_id" readonly="state != 'draft'"
+                                   groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date_start" readonly="state != 'draft'"/>
+                            <field name="date_required" readonly="state != 'draft'"/>
+                            <field name="origin" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group string="Motif de la demande">
+                        <field name="description" nolabel="1" required="1"
+                               readonly="state != 'draft'"
+                               placeholder="Pourquoi cet achat est-il nécessaire ?"/>
+                    </group>
+                    <notebook>
+                        <page string="Lignes" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="supplier_id"/>
+                                    <field name="subtotal"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue liste -->
+    <record id="purchase_request_view_list" model="ir.ui.view">
+        <field name="name">purchase.request.list</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <list string="Demandes d'achat">
+                <field name="name"/>
+                <field name="requested_by"/>
+                <field name="department_id"/>
+                <field name="date_start"/>
+                <field name="date_required"/>
+                <field name="amount_total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue recherche -->
+    <record id="purchase_request_view_search" model="ir.ui.view">
+        <field name="name">purchase.request.search</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <search string="Demandes d'achat">
+                <field name="name"/>
+                <field name="requested_by"/>
+                <field name="department_id"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_department" string="Département"
+                            context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="purchase_request_action_mine" model="ir.actions.act_window">
+        <field name="name">Mes demandes</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('requested_by', '=', uid)]</field>
+    </record>
+
+    <record id="purchase_request_action_all" model="ir.actions.act_window">
+        <field name="name">Toutes les demandes</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menus : Achats > Demandes internes -->
+    <menuitem id="purchase_request_menu_root"
+              name="Demandes internes"
+              parent="purchase.menu_purchase_root"
+              sequence="5"/>
+    <menuitem id="purchase_request_menu_mine"
+              name="Mes demandes"
+              parent="purchase_request_menu_root"
+              action="purchase_request_action_mine"
+              sequence="10"/>
+    <menuitem id="purchase_request_menu_all"
+              name="Toutes les demandes"
+              parent="purchase_request_menu_root"
+              action="purchase_request_action_all"
+              sequence="20"/>
+
+</odoo>

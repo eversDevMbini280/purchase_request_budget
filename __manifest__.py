@@ -18,7 +18,7 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Budget',
-    'version': '0.1',
+    'version': '18.0.1.0.0',
     'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
@@ -28,9 +28,9 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
     'data': [
         # 'security/ir.model.access.csv',
         'security/security.xml',
+        'security/ir.model.access.csv',
         'data/purchase_request_sequence.xml',
-        'views/views.xml',
-        'views/templates.xml',
+        'views/purchase_request_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
