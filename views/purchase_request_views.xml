@@ -15,6 +15,11 @@
                     <button name="action_direction_approve" string="Valider (Direction)" type="object"
                         class="btn-primary" invisible="state != 'waiting_direction'"
                         groups="purchase_request_budget.group_request_direction"/>
+                    <button name="action_refuse" string="Refuser" type="object"
+                        invisible="state not in ('submitted', 'waiting_direction')"
+                        groups="purchase_request_budget.group_request_manager"/>
+                    <button name="action_reset_draft" string="Remettre en brouillon" type="object"
+                        invisible="state != 'refused'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -39,6 +44,9 @@
                         <field name="description" nolabel="1" required="1"
                                readonly="state != 'draft'"
                                placeholder="Pourquoi cet achat est-il nécessaire ?"/>
+                    </group>
+                    <group string="Motif du refus" invisible="not refusal_reason">
+                        <field name="refusal_reason" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="Lignes" name="lines">

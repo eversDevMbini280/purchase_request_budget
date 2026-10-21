@@ -195,6 +195,45 @@ class PurchaseRequest(models.Model):
             request._check_budget()
             request.state = 'validated'
 
+    refusal_reason = fields.Text(
+        string='Motif du refus', readonly=True, copy=False, tracking=True)
+
+    def action_refuse(self):
+        """Ouvre l'assistant : le motif est obligatoire avant toute action."""
+        self.ensure_one()
+        if self.state not in ('submitted', 'waiting_direction'):
+            raise UserError(_("Cette demande ne peut plus être refusée."))
+        self._check_approver()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _("Refuser la demande"),
+            'res_model': 'purchase.request.refuse.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_request_id': self.id},
+        }
+
+    def _refuse(self, reason):
+        for request in self:
+            if request.state not in ('submitted', 'waiting_direction'):
+                raise UserError(_("Cette demande ne peut plus être refusée."))
+            request._check_approver()
+            request.write({'refusal_reason': reason, 'state': 'refused'})
+            request._close_activities()
+            request.message_post(
+                body=_("Demande refusée. Motif : %s", reason),
+                message_type='comment',
+                subtype_xmlid='mail.mt_comment',
+                partner_ids=request.requested_by.partner_id.ids)
+
+    def action_reset_draft(self):
+        for request in self:
+            if request.state != 'refused':
+                raise UserError(_("Seule une demande refusée peut être remise en brouillon."))
+            if request.requested_by != self.env.user:
+                raise UserError(_("Seul le demandeur peut remettre la demande en brouillon."))
+            request.state = 'draft'        
+
     @api.depends('line_ids.subtotal')
     def _compute_amount_total(self):
         for request in self:

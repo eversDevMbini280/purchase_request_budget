@@ -32,6 +32,8 @@
 
 - **H10** : | Le contrôle budgétaire est-il refait à la validation ? | Oui, à la validation finale (manager sous le seuil, ou Direction) | Deux demandes soumises ensemble ne peuvent pas dépasser le budget à elles deux |
 
+- **H11** : | Sort du motif après remise en brouillon | Le motif est conservé (visible dans le chatter) ; seul le demandeur remet en brouillon | L'historique des refus reste traçable ; une limite de refus pourrait être ajoutée plus tard |
+
 
 
 
