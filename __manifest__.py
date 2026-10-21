@@ -26,9 +26,9 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
         'security/security.xml',
         'security/ir.model.access.csv',
+        'security/security_rules.xml',
         'data/purchase_request_sequence.xml',
         'views/purchase_request_views.xml',
     ],

@@ -12,11 +12,13 @@
 *(Sera complété au fil de l'eau)*
 
 ## Hypothèses
-- **H1** : Version Odoo 18.0 Community choisie pour l'abondance de sa documentation.
+- **H1** : Version d'Odoo (18 ou 19) | Odoo 18.0 Community | Documentation plus abondante ; la 19 renomme plusieurs champs (product_uom, groups_id) |
 
-- **H2** : La création du modèle purchase.request dans models.py couplée à la séquence ir.sequence (purchase.request) garantit la génération automatique d'une référence unique sous le format DA/2026/XXXX lors de l'appel de la méthode create
+- **H2** :  Demandeur par défaut (le sujet dit « employé connecté ») | Le demandeur est l'utilisateur connecté ; son département est déduit de sa fiche employé liée et reste modifiable | Sans fiche employé, le département reste vide et la soumission est bloquée (H7) |
 
 - **H3** : « Prix d'achat du produit » et unité des lignes | Prix estimé = coût du produit (standard_price) ; unité = unité d'achat du produit (uom_po_id) | Un produit sans coût donne un prix à 0, modifiable à la main |
+
+- **H4** : | Qui voit quoi | L'acheteur voit les demandes Validées et Converties ; un manager voit aussi ses propres demandes | Une autre politique se règle dans security_rules.xml |
 
 ## Limites et suite
 *(Sera complété au fil de l'eau)*

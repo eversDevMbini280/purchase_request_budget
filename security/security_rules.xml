@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===== Demandes ===== -->
+    <record id="rule_request_requester" model="ir.rule">
+        <field name="name">Demande : le demandeur voit les siennes</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="groups" eval="[(4, ref('group_request_user'))]"/>
+        <field name="domain_force">[('requested_by', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_request_manager" model="ir.rule">
+        <field name="name">Demande : le manager voit son département</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="groups" eval="[(4, ref('group_request_manager'))]"/>
+        <field name="domain_force">[('department_id.manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_request_direction" model="ir.rule">
+        <field name="name">Demande : la Direction voit tout</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="groups" eval="[(4, ref('group_request_direction'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_request_buyer" model="ir.rule">
+        <field name="name">Demande : l'acheteur voit les validées et converties</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="domain_force">[('state', 'in', ['validated', 'converted'])]</field>
+    </record>
+
+    <record id="rule_request_company" model="ir.rule">
+        <field name="name">Demande : règle multi-société</field>
+        <field name="model_id" ref="model_purchase_request"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- ===== Lignes (même logique, via la demande) ===== -->
+    <record id="rule_line_requester" model="ir.rule">
+        <field name="name">Ligne : le demandeur voit les siennes</field>
+        <field name="model_id" ref="model_purchase_request_line"/>
+        <field name="groups" eval="[(4, ref('group_request_user'))]"/>
+        <field name="domain_force">[('request_id.requested_by', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_line_manager" model="ir.rule">
+        <field name="name">Ligne : le manager voit son département</field>
+        <field name="model_id" ref="model_purchase_request_line"/>
+        <field name="groups" eval="[(4, ref('group_request_manager'))]"/>
+        <field name="domain_force">[('request_id.department_id.manager_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_line_direction" model="ir.rule">
+        <field name="name">Ligne : la Direction voit tout</field>
+        <field name="model_id" ref="model_purchase_request_line"/>
+        <field name="groups" eval="[(4, ref('group_request_direction'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_line_buyer" model="ir.rule">
+        <field name="name">Ligne : l'acheteur voit celles des demandes validées et converties</field>
+        <field name="model_id" ref="model_purchase_request_line"/>
+        <field name="groups" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+        <field name="domain_force">[('request_id.state', 'in', ['validated', 'converted'])]</field>
+    </record>
+
+    <record id="rule_line_company" model="ir.rule">
+        <field name="name">Ligne : règle multi-société</field>
+        <field name="model_id" ref="model_purchase_request_line"/>
+        <field name="domain_force">['|', ('request_id.company_id', '=', False), ('request_id.company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>
