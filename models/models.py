@@ -147,6 +147,54 @@ class PurchaseRequest(models.Model):
                     summary=_("À valider"),
                     note=_("La demande %s est à valider.", request.name))
 
+    def _check_approver(self):
+        """L'utilisateur courant peut-il traiter la demande à son niveau actuel ?"""
+        self.ensure_one()
+        user = self.env.user
+        if self.requested_by == user:
+            raise UserError(_("Vous ne pouvez pas valider ou refuser votre propre demande."))
+        is_direction = user.has_group('purchase_request_budget.group_request_direction')
+        if self.state == 'submitted':
+            if not (is_direction or user == self.department_id.manager_id.user_id):
+                raise UserError(_("Seul le manager du département (ou la Direction) peut traiter cette demande."))
+        elif self.state == 'waiting_direction':
+            if not is_direction:
+                raise UserError(_("Seule la Direction peut traiter cette demande."))
+
+    def _close_activities(self):
+        self.sudo().activity_feedback(['mail.mail_activity_data_todo'])
+
+    def action_manager_approve(self):
+        for request in self:
+            if request.state != 'submitted':
+                raise UserError(_("Cette demande n'attend pas la validation du manager."))
+            request._check_approver()
+            request._close_activities()
+            # Strictement supérieur au seuil : la Direction doit aussi valider
+            if request.amount_total > request.company_id.purchase_request_threshold:
+                directors = request._get_direction_users() - request.requested_by
+                if not directors:
+                    raise UserError(_("Le total dépasse le seuil mais aucun utilisateur Direction n'est disponible."))
+                request.state = 'waiting_direction'
+                for director in directors:
+                    request.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        user_id=director.id,
+                        summary=_("À valider (Direction)"),
+                        note=_("La demande %s dépasse le seuil : validation Direction requise.", request.name))
+            else:
+                request._check_budget()
+                request.state = 'validated'
+
+    def action_direction_approve(self):
+        for request in self:
+            if request.state != 'waiting_direction':
+                raise UserError(_("Cette demande n'attend pas la validation de la Direction."))
+            request._check_approver()
+            request._close_activities()
+            request._check_budget()
+            request.state = 'validated'
+
     @api.depends('line_ids.subtotal')
     def _compute_amount_total(self):
         for request in self:

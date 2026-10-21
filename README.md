@@ -26,5 +26,37 @@
 
 - **H7** : | Département ou manager manquant à la soumission | La soumission est bloquée avec un message clair | Un département sans manager lié à un utilisateur ne peut pas soumettre tant qu'il n'est pas configuré |
 
+- **H8** : | Valeur par défaut du seuil | 0 : tant qu'il n'est pas réglé, toute demande de total positif passe par la Direction | C'est le comportement le plus prudent ; la démo règle un seuil réaliste |
+
+- **H9** : | Qui valide la demande d'un manager (il ne valide jamais la sienne) | Un utilisateur Direction autre que le demandeur la valide au niveau 1 | La Direction est le seul niveau supérieur ; sans utilisateur Direction, la soumission est bloquée |
+
+- **H10** : | Le contrôle budgétaire est-il refait à la validation ? | Oui, à la validation finale (manager sous le seuil, ou Direction) | Deux demandes soumises ensemble ne peuvent pas dépasser le budget à elles deux |
+
+
+
+
+
+
+# Comparaison de chaque hypothèse de la roadmap avec les réponses d’OMIAS.
+
+
+#	Hypothèse	Verdict	Ce que ça change
+H1	Version Odoo 18	Inchangée (ton choix)	Ajoute les versions exactes de Python et PostgreSQL au README, comme OMIAS le demande
+H2	Demandeur = utilisateur connecté, département déduit de sa fiche employé	Inchangée (ton choix)	OMIAS ne l’a pas traitée : elle reste ton hypothèse, pas une réponse confirmée
+H3	Prix = coût du produit	Confirmée	Rien
+H4	L’acheteur voit les demandes Validées et Converties	Confirmée	Rien. « Un manager voit aussi les siennes » n’a pas été abordée : elle reste ton choix
+H5	Budget applicable (même département et société, bornes incluses)	Confirmée et complétée	Les sous-départements ne comptent pas dans le budget du parent
+H6	Chevauchement par département et société	Confirmée et complétée	Multi-société géré, une seule devise par société, pas de conversion
+H7	Département ou manager manquant : soumission bloquée	Confirmée	Rien
+H8	Seuil par défaut à 0	Confirmée	Ajoute au README qu’avec un seuil à 0, toute demande passe par la Direction
+H9	Un manager est validé par la Direction	Étendue (le code change)	Le cas « le demandeur est un utilisateur Direction » est maintenant tranché : un autre utilisateur Direction valide. Utilise les deux méthodes corrigées de mon dernier message
+H10	Contrôle budgétaire refait à la validation	Confirmée	Rien
+H11	Motif conservé, seul le demandeur remet en brouillon	Confirmée et précisée	Refus au niveau 1 : manager ou Direction ; au niveau 2 : Direction seule
+H12	« Modifiable » = champs métier en brouillon	Inchangée (ton choix)	Pas abordée par OMIAS
+H13	Contenu des demandes de prix	Confirmée et complétée	N’importe quel contact comme fournisseur ; « Convertie » est définitif ; seuls les acheteurs génèrent
+H14	Action planifiée : rappel après 3 jours	Supprimée	OMIAS n’en attend aucune : c’est un bonus. Si tu ne la fais pas, retire H14 et mets-la dans « Limites et suite »
+H15	Démo : un utilisateur par profil, mot de passe = identifiant	Confirmée	Les identifiants doivent figurer dans le README
+H16	Date d’envoi	Modifiée	Le sujet dit vendredi, OMIAS accepte jeudi soir au plus tard : à écrire dans le README, puisque la réponse diffère de « vendredi »
+
 ## Limites et suite
 *(Sera complété au fil de l'eau)*
