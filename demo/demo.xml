@@ -1,30 +1,251 @@
-<odoo>
-    <data>
-<!--
-          <record id="object0" model="purchase_request_budget.purchase_request_budget">
-            <field name="name">Object 0</field>
-            <field name="value">0</field>
-          </record>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
 
-          <record id="object1" model="purchase_request_budget.purchase_request_budget">
-            <field name="name">Object 1</field>
-            <field name="value">10</field>
-          </record>
+    <!-- Seuil de validation Direction de la société -->
+    <record id="base.main_company" model="res.company">
+        <field name="purchase_request_threshold">1000</field>
+    </record>
 
-          <record id="object2" model="purchase_request_budget.purchase_request_budget">
-            <field name="name">Object 2</field>
-            <field name="value">20</field>
-          </record>
+    <!-- Départements -->
+    <record id="demo_dept_it" model="hr.department"><field name="name">Informatique</field></record>
+    <record id="demo_dept_mkt" model="hr.department"><field name="name">Marketing</field></record>
+    <record id="demo_dept_fin" model="hr.department"><field name="name">Finance</field></record>
 
-          <record id="object3" model="purchase_request_budget.purchase_request_budget">
-            <field name="name">Object 3</field>
-            <field name="value">30</field>
-          </record>
+    <!-- Utilisateurs (mot de passe = identifiant) -->
+    <record id="demo_user_marie" model="res.users">
+        <field name="name">Marie (Demandeur, Informatique)</field>
+        <field name="login">marie</field>
+        <field name="password">marie</field>
+        <field name="email">marie@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_budget.group_request_user')])]"/>
+    </record>
+    <record id="demo_user_awa" model="res.users">
+        <field name="name">Awa (Demandeur, Marketing)</field>
+        <field name="login">awa</field>
+        <field name="password">awa</field>
+        <field name="email">awa@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_budget.group_request_user')])]"/>
+    </record>
+    <record id="demo_user_manager_it" model="res.users">
+        <field name="name">Manager Informatique</field>
+        <field name="login">manager_it</field>
+        <field name="password">manager_it</field>
+        <field name="email">manager_it@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_budget.group_request_manager')])]"/>
+    </record>
+    <record id="demo_user_manager_mkt" model="res.users">
+        <field name="name">Manager Marketing</field>
+        <field name="login">manager_mkt</field>
+        <field name="password">manager_mkt</field>
+        <field name="email">manager_mkt@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_budget.group_request_manager')])]"/>
+    </record>
+    <record id="demo_user_manager_fin" model="res.users">
+        <field name="name">Manager Finance</field>
+        <field name="login">manager_fin</field>
+        <field name="password">manager_fin</field>
+        <field name="email">manager_fin@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_budget.group_request_manager')])]"/>
+    </record>
+    <record id="demo_user_direction" model="res.users">
+        <field name="name">Direction</field>
+        <field name="login">direction</field>
+        <field name="password">direction</field>
+        <field name="email">direction@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase_request_budget.group_request_direction')])]"/>
+    </record>
+    <record id="demo_user_acheteur" model="res.users">
+        <field name="name">Acheteur</field>
+        <field name="login">acheteur</field>
+        <field name="password">acheteur</field>
+        <field name="email">acheteur@example.com</field>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_user'), ref('purchase.group_purchase_user')])]"/>
+    </record>
 
-          <record id="object4" model="purchase_request_budget.purchase_request_budget">
-            <field name="name">Object 4</field>
-            <field name="value">40</field>
-          </record>
--->
-    </data>
+    <!-- Employés liés aux utilisateurs -->
+    <record id="demo_emp_marie" model="hr.employee">
+        <field name="name">Marie (Demandeur, Informatique)</field>
+        <field name="user_id" ref="demo_user_marie"/>
+        <field name="department_id" ref="demo_dept_it"/>
+    </record>
+    <record id="demo_emp_awa" model="hr.employee">
+        <field name="name">Awa (Demandeur, Marketing)</field>
+        <field name="user_id" ref="demo_user_awa"/>
+        <field name="department_id" ref="demo_dept_mkt"/>
+    </record>
+    <record id="demo_emp_manager_it" model="hr.employee">
+        <field name="name">Manager Informatique</field>
+        <field name="user_id" ref="demo_user_manager_it"/>
+        <field name="department_id" ref="demo_dept_it"/>
+    </record>
+    <record id="demo_emp_manager_mkt" model="hr.employee">
+        <field name="name">Manager Marketing</field>
+        <field name="user_id" ref="demo_user_manager_mkt"/>
+        <field name="department_id" ref="demo_dept_mkt"/>
+    </record>
+    <record id="demo_emp_manager_fin" model="hr.employee">
+        <field name="name">Manager Finance</field>
+        <field name="user_id" ref="demo_user_manager_fin"/>
+        <field name="department_id" ref="demo_dept_fin"/>
+    </record>
+
+    <!-- Managers des départements -->
+    <function model="hr.department" name="write"
+              eval="[[ref('demo_dept_it')], {'manager_id': ref('demo_emp_manager_it')}]"/>
+    <function model="hr.department" name="write"
+              eval="[[ref('demo_dept_mkt')], {'manager_id': ref('demo_emp_manager_mkt')}]"/>
+    <function model="hr.department" name="write"
+              eval="[[ref('demo_dept_fin')], {'manager_id': ref('demo_emp_manager_fin')}]"/>
+
+    <!-- Produits et fournisseurs -->
+    <record id="demo_product_chair" model="product.product">
+        <field name="name">Chaise de bureau</field>
+        <field name="standard_price">60</field>
+    </record>
+    <record id="demo_product_table" model="product.product">
+        <field name="name">Table de réunion</field>
+        <field name="standard_price">200</field>
+    </record>
+    <record id="demo_product_screen" model="product.product">
+        <field name="name">Écran 27 pouces</field>
+        <field name="standard_price">150</field>
+    </record>
+    <record id="demo_product_server" model="product.product">
+        <field name="name">Serveur</field>
+        <field name="standard_price">1500</field>
+    </record>
+    <record id="demo_supplier_a" model="res.partner">
+        <field name="name">Fournisseur A SARL</field>
+        <field name="is_company" eval="True"/>
+    </record>
+    <record id="demo_supplier_b" model="res.partner">
+        <field name="name">Fournisseur B SA</field>
+        <field name="is_company" eval="True"/>
+    </record>
+
+    <!-- Budgets : un par département, sur l'année en cours -->
+    <record id="demo_budget_it" model="purchase.budget">
+        <field name="department_id" ref="demo_dept_it"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="date_start" eval="time.strftime('%Y-01-01')"/>
+        <field name="date_end" eval="time.strftime('%Y-12-31')"/>
+        <field name="amount">5000</field>
+    </record>
+    <record id="demo_budget_mkt" model="purchase.budget">
+        <field name="department_id" ref="demo_dept_mkt"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="date_start" eval="time.strftime('%Y-01-01')"/>
+        <field name="date_end" eval="time.strftime('%Y-12-31')"/>
+        <field name="amount">5000</field>
+    </record>
+    <record id="demo_budget_fin" model="purchase.budget">
+        <field name="department_id" ref="demo_dept_fin"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="date_start" eval="time.strftime('%Y-01-01')"/>
+        <field name="date_end" eval="time.strftime('%Y-12-31')"/>
+        <field name="amount">5000</field>
+    </record>
+
+    <!-- Demande 1 : brouillon (Marie, 60) -->
+    <record id="demo_request_1" model="purchase.request">
+        <field name="requested_by" ref="demo_user_marie"/>
+        <field name="description">Remplacement d'une chaise cassée</field>
+    </record>
+    <record id="demo_line_1a" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_1"/>
+        <field name="product_id" ref="demo_product_chair"/>
+        <field name="description">Chaise de bureau</field>
+        <field name="quantity">1</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">60</field>
+    </record>
+
+    <!-- Demande 2 : soumise (Awa, 300) -->
+    <record id="demo_request_2" model="purchase.request">
+        <field name="requested_by" ref="demo_user_awa"/>
+        <field name="description">Deux écrans pour l'équipe design</field>
+    </record>
+    <record id="demo_line_2a" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_2"/>
+        <field name="product_id" ref="demo_product_screen"/>
+        <field name="description">Écran 27 pouces</field>
+        <field name="quantity">2</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">150</field>
+        <field name="supplier_id" ref="demo_supplier_b"/>
+    </record>
+
+    <!-- Demande 3 : validée (Marie, 800 : 2 lignes chez A, 1 chez B) -->
+    <record id="demo_request_3" model="purchase.request">
+        <field name="requested_by" ref="demo_user_marie"/>
+        <field name="description">Équipement de la nouvelle salle de réunion</field>
+    </record>
+    <record id="demo_line_3a" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_3"/>
+        <field name="product_id" ref="demo_product_chair"/>
+        <field name="description">Chaise de bureau</field>
+        <field name="quantity">5</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">60</field>
+        <field name="supplier_id" ref="demo_supplier_a"/>
+    </record>
+    <record id="demo_line_3b" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_3"/>
+        <field name="product_id" ref="demo_product_table"/>
+        <field name="description">Table de réunion</field>
+        <field name="quantity">1</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">200</field>
+        <field name="supplier_id" ref="demo_supplier_a"/>
+    </record>
+    <record id="demo_line_3c" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_3"/>
+        <field name="product_id" ref="demo_product_screen"/>
+        <field name="description">Écran 27 pouces</field>
+        <field name="quantity">2</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">150</field>
+        <field name="supplier_id" ref="demo_supplier_b"/>
+    </record>
+
+    <!-- Demande 4 : attente Direction (Awa, 1500, au-dessus du seuil de 1000) -->
+    <record id="demo_request_4" model="purchase.request">
+        <field name="requested_by" ref="demo_user_awa"/>
+        <field name="description">Serveur pour le site de campagne</field>
+    </record>
+    <record id="demo_line_4a" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_4"/>
+        <field name="product_id" ref="demo_product_server"/>
+        <field name="description">Serveur</field>
+        <field name="quantity">1</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">1500</field>
+        <field name="supplier_id" ref="demo_supplier_a"/>
+    </record>
+
+    <!-- Demande 5 : refusée (Marie, 400) -->
+    <record id="demo_request_5" model="purchase.request">
+        <field name="requested_by" ref="demo_user_marie"/>
+        <field name="description">Tables supplémentaires</field>
+    </record>
+    <record id="demo_line_5a" model="purchase.request.line">
+        <field name="request_id" ref="demo_request_5"/>
+        <field name="product_id" ref="demo_product_table"/>
+        <field name="description">Table de réunion</field>
+        <field name="quantity">2</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="price_unit">200</field>
+    </record>
+
+    <!-- États des demandes : changés APRÈS la création des lignes,
+         car les lignes ne se créent qu'en brouillon -->
+    <function model="purchase.request" name="write"
+              eval="[[ref('demo_request_2')], {'state': 'submitted'}]"/>
+    <function model="purchase.request" name="write"
+              eval="[[ref('demo_request_3')], {'state': 'validated'}]"/>
+    <function model="purchase.request" name="write"
+              eval="[[ref('demo_request_4')], {'state': 'waiting_direction'}]"/>
+    <function model="purchase.request" name="write"
+              eval="[[ref('demo_request_5')], {'state': 'refused', 'refusal_reason': 'Priorité donnée à un autre projet.'}]"/>
+
 </odoo>

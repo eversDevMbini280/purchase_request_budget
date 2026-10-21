@@ -39,6 +39,7 @@
 
 - **H13** : | Contenu des lignes de demande de prix | Prix et unité repris de la ligne de demande ; fournisseur = partenaire suggéré ; devise de la société | Les prix restent modifiables par l'acheteur avant l'envoi au fournisseur |
 
+- **H14** : | Comptes et période des données de démonstration | Mot de passe = identifiant (marie, awa, manager_it, manager_mkt, manager_fin, direction, acheteur) ; budgets sur l'année en cours ; seuil de la société à 1000 | Les données de démo ne servent qu'à tester ; elles ne se chargent pas en production |
 
 
 # Comparaison de chaque hypothèse de la roadmap avec les réponses d’OMIAS.
