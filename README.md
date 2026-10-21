@@ -20,5 +20,9 @@
 
 - **H4** : | Qui voit quoi | L'acheteur voit les demandes Validées et Converties ; un manager voit aussi ses propres demandes | Une autre politique se règle dans security_rules.xml |
 
+- **H5** : | Quel budget s'applique à une demande | Celui du même département et de la même société dont la période contient la date de la demande (bornes incluses) | Une demande hors de toute période n'a pas de budget : sa soumission est bloquée |
+
+- **H6** : | Unicité des budgets | Pas de chevauchement par département et par société | Deux sociétés peuvent avoir des budgets aux mêmes dates pour un même département |
+
 ## Limites et suite
 *(Sera complété au fil de l'eau)*
