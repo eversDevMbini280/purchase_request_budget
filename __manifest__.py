@@ -19,6 +19,7 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
     # for the full list
     'category': 'Budget',
     'version': '0.1',
+    'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'mail', 'hr', 'purchase', 'product'],
@@ -27,6 +28,7 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
     'data': [
         # 'security/ir.model.access.csv',
         'security/security.xml',
+        'data/purchase_request_sequence.xml',
         'views/views.xml',
         'views/templates.xml',
     ],

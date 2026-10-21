@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Séquence automatique pour les demandes d'achat -->
+        <record id="seq_purchase_request" model="ir.sequence">
+            <field name="name">Séquence Demande d'achat</field>
+            <field name="code">purchase.request</field>
+            <field name="prefix">DA/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>
