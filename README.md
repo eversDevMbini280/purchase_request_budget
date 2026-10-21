@@ -6,10 +6,39 @@
 - Commande d'installation : `python odoo/odoo-bin --addons-path=odoo/addons,custom_addons,omias-test -d pr_dev -i purchase_request_budget`
 
 ## Présentation
-*(Sera complété au fil de l'eau)*
+
+Le module remplace les demandes d'achat par e-mail et papier par un circuit unique, tracé et contrôlé.
+
+Parcours d'un utilisateur :
+
+1. **Demandeur** : crée une demande (motif obligatoire, lignes produit/quantité/prix/fournisseur). La référence `DA/AAAA/NNNN` est générée. Il la **soumet**.
+2. **Contrôle budgétaire** à la soumission : la demande est bloquée s'il n'y a ni ligne, ni budget pour la période, ni manager, ou si le total dépasse le restant (le message donne les deux montants).
+3. **Manager** du département : reçoit une activité « À valider », valide ou refuse (avec motif). Il ne valide jamais sa propre demande.
+4. **Direction** : n'intervient que si le total est strictement supérieur au seuil de la société. Elle valide ou refuse.
+5. **Refus** : motif obligatoire (assistant), publié dans le chatter, demandeur notifié ; il peut remettre en brouillon et resoumettre.
+6. **Acheteur** : sur une demande Validée, génère une demande de prix par fournisseur ; la demande passe à Convertie.
+
+Menus : Achats › Demandes internes › Mes demandes, Demandes à valider, Toutes les demandes, Budgets. Seuil : Achats › Configuration › Paramètres.
+
+Comptes de démo (mot de passe = identifiant) : `marie`, `awa` (Demandeurs), `manager_it`, `manager_mkt`, `manager_fin` (Managers), `direction`, `acheteur`.
 
 ## Choix techniques
-*(Sera complété au fil de l'eau)*
+
+- **Total stocké** (`@api.depends` + `store=True`) : triable, filtrable et suivi dans le chatter.
+
+- **Assistant de refus** (`TransientModel`) : force la saisie du motif avant l'action.
+
+- **Groupes hiérarchiques** (`implied_ids`) : un seul groupe par personne, aucun droit oublié.
+
+- **Règles d'enregistrement** : règles de groupe en OU, règle multi-société en ET ; les droits d'accès (CSV) disent quelle action, les règles disent quelles lignes.
+
+- **`sudo()` dans le calcul du budget** : le restant reste exact même si l'utilisateur ne voit pas toutes les demandes.
+
+- **Protection côté serveur** (`write`, `unlink`, contrôles dans les méthodes) en plus de l'écran : l'écran seul ne protège pas.
+
+- **Contrôle budgétaire refait à la validation finale** (H10).
+
+- **Départements stockés et modifiables** (`compute` + `store=True` + `readonly=False`).
 
 ## Hypothèses
 - **H1** : Version d'Odoo (18 ou 19) | Odoo 18.0 Community | Documentation plus abondante ; la 19 renomme plusieurs champs (product_uom, groups_id) |
@@ -64,4 +93,10 @@ H15	Démo : un utilisateur par profil, mot de passe = identifiant	Confirmée	Les
 H16	Date d’envoi	Modifiée	Le sujet dit vendredi, OMIAS accepte jeudi soir au plus tard : à écrire dans le README, puisque la réponse diffère de « vendredi »
 
 ## Limites et suite
-*(Sera complété au fil de l'eau)*
+
+- Pas de rapport PDF « Bon de demande d'achat » (je l'ajouterais avec un rapport QWeb et l'historique des validations).
+- Pas d'assistant de choix du fournisseur pour les lignes qui n'en ont pas (aujourd'hui la génération est bloquée).
+- Pas de tests automatiques : je commencerais par des tests sur le contrôle budgétaire et le seuil.
+- Interface en français uniquement (pas de fichiers de traduction).
+- Deux demandes soumises simultanément ne se réservent pas le budget : seul le contrôle final (validation) les départage.
+- Le délai de 3 jours de l'action planifiée est codé en dur (pas encore paramétrable).

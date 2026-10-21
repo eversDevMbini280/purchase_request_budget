@@ -30,9 +30,11 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
         'security/ir.model.access.csv',
         'security/security_rules.xml',
         'data/purchase_request_sequence.xml',
-        'views/purchase_budget_views.xml'
+        'data/purchase_request_cron.xml',
         'views/purchase_request_views.xml',
+        'views/purchase_budget_views.xml',
         'wizard/purchase_request_refuse_wizard_views.xml',
+        'views/res_config_settings_views.xml',
         'views/purchase_order_views.xml',
     ],
     # only loaded in demonstration mode
