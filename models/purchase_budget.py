@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class PurchaseBudget(models.Model):
@@ -96,3 +96,21 @@ class PurchaseBudget(models.Model):
         for budget in self:
             if budget.amount < 0:
                 raise ValidationError(_("Le montant alloué ne peut pas être négatif."))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            request = self.env['purchase.request'].browse(vals.get('request_id'))
+            if request and request.state != 'draft':
+                raise UserError(_("Les lignes d'une demande ne peuvent être modifiées qu'en brouillon."))
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if any(line.request_id.state != 'draft' for line in self):
+            raise UserError(_("Les lignes d'une demande ne peuvent être modifiées qu'en brouillon."))
+        return super().write(vals)
+
+    def unlink(self):
+        if any(line.request_id.state != 'draft' for line in self):
+            raise UserError(_("Les lignes d'une demande ne peuvent être supprimées qu'en brouillon."))
+        return super().unlink()            

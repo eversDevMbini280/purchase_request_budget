@@ -10,6 +10,9 @@ class PurchaseRequest(models.Model):
     _description = 'Demande d\'achat'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'id desc'
+    _LOCKED_FIELDS = (
+        'requested_by', 'description', 'department_id', 'date_start',
+        'date_required', 'origin', 'company_id', 'line_ids')
 
     name = fields.Char(
         string='Numéro de demande',
@@ -251,3 +254,19 @@ class PurchaseRequest(models.Model):
             if vals.get('name', _('New')) == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request') or _('New')
         return super().create(vals_list)
+
+    def write(self, vals):
+        if set(self._LOCKED_FIELDS) & set(vals):
+            for request in self:
+                if request.state != 'draft':
+                    raise UserError(_(
+                        "La demande %s n'est plus en brouillon : elle ne peut plus être modifiée.",
+                        request.name))
+        return super().write(vals)
+
+    def unlink(self):
+        for request in self:
+            if request.state not in ('draft', 'refused'):
+                raise UserError(_(
+                    "Seules les demandes en brouillon ou refusées peuvent être supprimées."))
+        return super().unlink()

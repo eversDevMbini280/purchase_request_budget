@@ -35,7 +35,7 @@
 - **H11** : | Sort du motif après remise en brouillon | Le motif est conservé (visible dans le chatter) ; seul le demandeur remet en brouillon | L'historique des refus reste traçable ; une limite de refus pourrait être ajoutée plus tard |
 
 
-
+- **H12** : | Que veut dire « modifiable » | Les champs métier (demandeur, motif, département, dates, lignes) ne sont modifiables qu'en brouillon ; les changements d'état passent par les boutons | Les messages du chatter restent possibles à tout état |
 
 
 
