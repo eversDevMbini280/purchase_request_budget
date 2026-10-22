@@ -176,7 +176,8 @@ class PurchaseRequest(models.Model):
             request._check_approver()
             request._close_activities()
             # Strictement supérieur au seuil : la Direction doit aussi valider
-            if request.amount_total > request.company_id.purchase_request_threshold:
+            threshold = request.company_id.purchase_request_threshold
+            if threshold > 0 and request.amount_total > threshold:
                 directors = request._get_direction_users() - request.requested_by
                 if not directors:
                     raise UserError(_("Le total dépasse le seuil mais aucun utilisateur Direction n'est disponible."))

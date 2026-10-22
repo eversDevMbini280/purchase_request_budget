@@ -39,7 +39,7 @@ multi-départements, de l'expression du besoin jusqu'à la demande de prix fourn
     ],
     # only loaded in demonstration mode
     'demo': [
-        'demo/demo.xml',
+        #'demo/demo.xml',
     ],
 }
 

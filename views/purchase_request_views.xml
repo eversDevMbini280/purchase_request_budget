@@ -157,18 +157,19 @@
               action="purchase_request_action_to_approve"
               sequence="15"
               groups="group_request_manager"/>
+    <!-- Correction 1 : l'acheteur doit aussi voir « Toutes les demandes »
+         pour pouvoir ouvrir une demande validée et créer les demandes de prix. -->
     <menuitem id="purchase_request_menu_all"
               name="Toutes les demandes"
               parent="purchase_request_menu_root"
               action="purchase_request_action_all"
               sequence="20"
-              groups="group_request_manager"/>
+              groups="group_request_manager,purchase.group_purchase_user"/>
 
-    <!-- À n'activer QUE si un Demandeur ne voit pas le menu Achats :
-         ajoute son groupe au menu racine standard.
+    <!-- Correction 2 : un simple Demandeur doit voir le menu racine Achats,
+         sinon il n'accède à aucun menu « Demandes internes ». -->
     <record id="purchase.menu_purchase_root" model="ir.ui.menu">
         <field name="groups_id" eval="[(4, ref('group_request_user'))]"/>
     </record>
-    -->
 
 </odoo>
